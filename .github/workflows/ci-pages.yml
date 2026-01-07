@@ -1,50 +1,34 @@
-name: CI & Deploy Pages
+name: Deploy Portfolio to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main ]   # pipeline runs every time you push to main branch
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  check:
-    name: Basic checks
+  build-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Ensure required files exist
-        run: |
-          for f in index.html style.css script.js; do
-            if [ ! -f "$f" ]; then
-              echo "Missing $f" && exit 1
-            fi
-          done
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-      - name: Run HTML linter (optional)
-        run: |
-          npm install -g html-validate
-          html-validate index.html || true
-
-  deploy:
-    name: Build & Deploy to GitHub Pages (gh-pages)
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Prepare site directory
-        run: |
-          mkdir -p out
-          cp -R index.html style.css script.js images out/
-
-      - name: Deploy to GitHub Pages (gh-pages branch)
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload website files
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
+          path: "."   # upload everything (index.html, css, js, images)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
