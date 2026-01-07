@@ -2,7 +2,7 @@ name: Deploy Portfolio to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # pipeline runs every time you push to main branc
+    branches: [ main ]   
 
 permissions:
   contents: read
