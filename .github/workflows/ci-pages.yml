@@ -32,19 +32,19 @@ jobs:
           html-validate index.html || true
 
   deploy:
-    name: Build & Deploy to GitHub Pages
+    name: Build & Deploy to GitHub Pages (gh-pages)
     needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare artifact
+      - name: Prepare site directory
         run: |
           mkdir -p out
-          # copy only site assets to avoid including GitHub workflow files
           cp -R index.html style.css script.js images out/
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to GitHub Pages (gh-pages branch)
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: ./out
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
