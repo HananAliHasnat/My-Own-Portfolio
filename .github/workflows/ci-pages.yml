@@ -2,7 +2,11 @@ name: Deploy Portfolio to GitHub Pages
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ main ]   
+=======
+    branches: [ main ]
+>>>>>>> b857f5b (Add GitHub Pages deploy workflow)
 
 permissions:
   contents: read
@@ -16,6 +20,7 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+<<<<<<< HEAD
 
     steps:
       - name: Checkout code
@@ -28,6 +33,35 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: "."   # upload everything (index.html, css, js, images)
+=======
+    environment:
+      name: github-pages
+      url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # If you need a build step (npm, Hugo, Jekyll, etc.), insert it here.
+      # Example for a plain static site: no build step required.
+      # Example for a Node build (uncomment if required):
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "18"
+      # - name: Install dependencies
+      #   run: npm ci
+      # - name: Build site
+      #   run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload website files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."   # adjust to the build output directory if you have one (e.g. ./build or ./public)
+>>>>>>> b857f5b (Add GitHub Pages deploy workflow)
 
       - name: Deploy to GitHub Pages
         id: deployment
