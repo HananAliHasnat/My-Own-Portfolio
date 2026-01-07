@@ -1,0 +1,50 @@
+name: CI & Deploy Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  check:
+    name: Basic checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure required files exist
+        run: |
+          for f in index.html style.css script.js; do
+            if [ ! -f "$f" ]; then
+              echo "Missing $f" && exit 1
+            fi
+          done
+
+      - name: Run HTML linter (optional)
+        run: |
+          npm install -g html-validate
+          html-validate index.html || true
+
+  deploy:
+    name: Build & Deploy to GitHub Pages
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p out
+          # copy only site assets to avoid including GitHub workflow files
+          cp -R index.html style.css script.js images out/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./out
